@@ -6,13 +6,13 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Book;
 
-class BookReservationTest extends TestCase
+class BookManagementTest extends TestCase
 {
     use RefreshDatabase;
+    
     /** 
      * @test
     **/
-
     public function a_book_can_be_added_to_the_library()
     {
         $this->withoutExceptionHandling();
@@ -21,8 +21,10 @@ class BookReservationTest extends TestCase
             'title' => 'Book Title',
             'author' => 'Sherif',
         ]);
-        $response->assertOk();
+        
+        $book = Book::first();
         $this->assertCount(1, Book::all());
+        $response->assertRedirect($book->path());
     }
 
     /** @test */
@@ -56,11 +58,25 @@ class BookReservationTest extends TestCase
             'author' => 'Sherif',
         ]);
         $book = Book::first();
-        $response = $this->patch('/books/'. $book->id, [
+        $response = $this->patch($book->path(), [
             'title' => 'new Title',
             'author' => 'new Author',
         ]);
         $this->assertEquals('new Title', Book::first()->title);
         $this->assertEquals('new Author', Book::first()->author);
+        $response->assertRedirect($book->fresh()->path());
+    }
+
+    /** @test */
+    public function a_book_can_be_deleted()
+    {
+        $this->post('/books', [
+            'title' => 'Book Title',
+            'author' => 'Sherif',
+        ]);
+        $book = Book::first();
+        $response = $this->delete($book->path());
+        $this->assertCount(0, Book::all());
+        $response->assertRedirect('/books');
     }
 }
