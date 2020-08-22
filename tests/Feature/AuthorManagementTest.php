@@ -17,11 +17,12 @@ class AuthorManagementTest extends TestCase
     {
         $this->withoutExceptionHandling();
         $response = $this->post('/author', [
-            'dob'   =>  '16/02/1988',
+            'dob'   =>  '16-02-1988',
             'name'  =>  'Author Name',
         ]);
         $author = Author::all();
         $this->assertCount(1, $author);
-        $this->assertEquals('16/02/1988', $author->first()->dob);
+        $this->assertInstanceOf(Carbon::class, $author->first()->dob);
+        $this->assertEquals('1988/16/02', $author->first()->dob->format('Y/d/m'));
     }
 }
