@@ -14,7 +14,7 @@ Route::post('/checkin/{book}', 'CheckinBookController@store');
 
 
 // author routes
-Route::post('author', 'AuthorsController@store');
+Route::post('authors', 'AuthorsController@store');
 
 Auth::routes();
 
